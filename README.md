@@ -93,6 +93,19 @@ Wichtig:
 
 ### 3. Companion-Konfiguration importieren
 
+Für PAD/CLICK ist mit dem Ableton-Modul **2.0.0** zuerst eine kleine
+Status-Erweiterung notwendig. Sie liefert exakte Lautstärken und trackweise
+Clip-/Mute-Zustände; es läuft weiterhin keine separate Bridge.
+
+```bash
+python3 tools/enable_raw_state.py "$HOME/Library/Application Support/companion/modules/ableton-osc-2.0.0/main.js"
+```
+
+Danach die Verbindung `ableton` in Companion neu starten. Das Skript behält
+`main.js.before-worship-raw-state` als Sicherung. Nach Modul-Updates muss die
+Kompatibilität erneut geprüft werden; andere Versionen sind nicht getestet.
+Details: [PAD/CLICK und Sicherheit](docs/PAD-CLICK.md).
+
 In Companion **Import / Export** öffnen und
 `companion/Worship-Live.companionconfig` importieren.
 
@@ -115,7 +128,7 @@ Zuerst PA, Interface und Monitore stummschalten oder trennen. Danach:
 
 1. PREV/NEXT drücken: Nur die Auswahl darf wechseln.
 2. PLAY kurz testen.
-3. STOP und PANIC prüfen.
+3. STOP auch während eines PAD-/CLICK-Songwechsels prüfen.
 4. Einen anderen Song vorwählen: PLAY muss langsam grün/amber blinken.
 
 ## Bedienung
@@ -126,15 +139,20 @@ Zuerst PA, Interface und Monitore stummschalten oder trennen. Danach:
 | `▶ PLAY` | Ausgewählte Scene starten |
 | `■ STOP` | Alle Clips und den Transport stoppen |
 | `▶▶ NEXT` | Nächsten Song auswählen, ohne ihn zu starten |
-| `PANIC` | Vollständige STOP-Sequenz |
+| `PAD` | Pad der Auswahl starten, ergänzen oder ausschalten |
+| `CLICK` | Click der Auswahl starten, ergänzen oder ausschalten |
 
-Die drei übrigen großen Tasten sind absichtlich leer. Die äußeren unteren
+Oben sind die äußeren Tasten leer, PAD und CLICK sitzen mittig. Unten liegen
+PREV, PLAY, STOP und NEXT. Die äußeren unteren
 Tasten bleiben Page Up/Page Down.
 
 Während ein Song läuft, bleibt dessen Titel groß auf dem LCD. Wird mit
 PREV/NEXT ein anderer Song vorgewählt, zeigt die Statuszeile
 `AUSWAHL: <Titel>` und PLAY blinkt langsam. Erst ein Druck auf PLAY startet die
-neue Scene.
+neue Scene vollständig. PAD oder CLICK wechseln dagegen mit einem einsekündigen
+Fade ausschließlich zur jeweiligen Komponente des vorgewählten Songs.
+Bei unveränderter Auswahl schalten sie nur ihre Komponente um. PLAY startet
+anschließend den vollständigen Song von Anfang an.
 
 ## Dynamische Setlist
 
@@ -151,14 +169,18 @@ Scene-Struktur als technische Referenz. Alle Audio-Dateien fehlen absichtlich;
 lokale Medienpfade wurden entfernt. Ableton kann deshalb beim Öffnen fehlende
 Medien melden. Drittanbieter-Plugins sind nicht enthalten und müssen separat
 lizenziert/installiert werden. Für den Controller sind nur Scene-Namen, die
-INFINITY-Spur und ihre Clipnamen erforderlich.
+INFINITY-Spur und ihre Clipnamen erforderlich. Für die neuen PAD-/CLICK-Aktionen
+ist zusätzlich die genaue [Trackstruktur](docs/PAD-CLICK.md) erforderlich.
+Für hörbare Pads müssen eigene Sounds beziehungsweise verfügbare Instrumente
+eingesetzt werden; das Template liefert keine Sounds mit.
 
 ## Sicherheit
 
 - PREV und NEXT senden ausschließlich eine Scene-Auswahl.
 - PLAY ist außerhalb der erkannten Setlist sowie bei ungültiger INFINITY-Spur
   blockiert.
-- STOP und PANIC senden `stop_all_clips` und `stop_playing`.
+- STOP bricht ausstehende Startsequenzen ab, sendet `stop_all_clips` und
+  `stop_playing` und stellt gesicherte Fade-Lautstärken wieder her.
 - Der Blink-Trigger ist rein visuell und sendet keine Ableton-Befehle.
 - Niemals eine neue Version erstmals an einer offenen PA testen.
 

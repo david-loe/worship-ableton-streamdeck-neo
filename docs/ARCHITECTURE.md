@@ -35,7 +35,7 @@ Die Suche beginnt bei Scene 1 und endet am ersten der folgenden Fälle:
 ## Zustände
 
 - `selected_scene`: in Live vorgewählte Scene.
-- `running_scene`: tatsächlich auf der INFINITY-Spur laufender Slot.
+- `observed_scene`: tatsächlich laufender Slot, über Pad, Click und Backingtracks ermittelt.
 - `last_setlist_scene`: dynamisch erkannte letzte Song-Scene.
 - `selection_differs`: Song läuft, aber eine andere gültige Scene ist gewählt.
 - `is_playing`: Live-Transportstatus.
@@ -60,3 +60,5 @@ nur die Buttonfarbe.
   Listener.
 - Jede Sekunde: rein visuelle Blinkphase.
 
+Ab Version 1.1 werden alle 13 Referenzspuren validiert. Details zu Trackstruktur,
+Einzelstarts und Fade-Sicherheit stehen in [PAD-CLICK.md](PAD-CLICK.md).

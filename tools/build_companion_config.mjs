@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { installAccompaniment } from './pad-click.mjs'
 
 const inputPath = process.argv[2]
 const outputPath = process.argv[3]
@@ -88,7 +89,11 @@ const setCustom = (name, value, isExpression = true) => ({
 })
 
 const sendBlank = (path) => moduleAction('send_blank', { path })
-const sendInt = (path, int) => moduleAction('send_int', { path, int })
+const sendInt = (path, int) => {
+ const action = moduleAction('send_int', { path, int })
+ if (String(int).startsWith('max(')) action.options.int = expr(`concat('', ${int})`)
+ return action
+}
 
 const button = ({ background, texts, actions = [], notes = '' }) => ({
 	type: 'button-layered',
@@ -393,6 +398,7 @@ if (neo?.groupConfig) {
 	neo.groupConfig.use_last_page = false
 }
 
+installAccompaniment(config, { nextId, val, expr, setCustom, moduleAction, sendBlank, sendInt, button, trigger, intervalEvent, startupEvent, variableEvent })
 fs.writeFileSync(outputPath, `${JSON.stringify(config, null, '\t')}\n`)
 console.log(`Wrote ${outputPath}`)
 console.log(`Ableton connection: ${abletonId}`)

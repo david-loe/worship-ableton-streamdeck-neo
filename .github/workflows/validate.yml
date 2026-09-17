@@ -18,4 +18,7 @@ jobs:
       - name: Validate public files
         run: python3 tools/validate_public_assets.py
       - name: Check Companion generator syntax
-        run: node --check tools/build_companion_config.mjs
+        run: |
+          node --check tools/build_companion_config.mjs
+          node --check tools/pad-click.mjs
+          node tools/build_companion_config.mjs companion/Worship-Live.companionconfig /tmp/generated.json

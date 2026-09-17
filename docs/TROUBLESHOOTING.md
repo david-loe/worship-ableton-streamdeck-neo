@@ -47,9 +47,9 @@ größer oder gleich 1 zeigen.
 3. In Companion **Surfaces → Rescan USB** ausführen.
 4. Elgato-Integration aktivieren und Seite `WORSHIP LIVE` zuweisen.
 
-## STOP/PANIC testen
+## STOP testen
 
-STOP und PANIC senden nacheinander:
+STOP bricht zunächst ausstehende Starts ab und sendet nacheinander:
 
 ```text
 /live/song/stop_all_clips
@@ -59,3 +59,11 @@ STOP und PANIC senden nacheinander:
 Für Tests zuerst die Audioausgabe sicher stummschalten. Das öffentliche Profil
 enthält keine automatischen PLAY-Tests.
 
+## PAD / CLICK: NICHT BEREIT oder CONFIG ERROR
+
+Die vollständige Trackreihenfolge muss [PAD-CLICK.md](PAD-CLICK.md) entsprechen.
+Die Modul-Erweiterung muss installiert und die Verbindung neu gestartet sein.
+`structure_ok`, `slots_fresh` und `component_valid` unter Expression Variables
+prüfen. `MEHRERE SONGS` bedeutet unterschiedliche gleichzeitig laufende Slots;
+zuerst STOP drücken. `CLIP / TEMPO FEHLT` bedeutet, dass Zielclip, Scene-Tempo
+oder Taktart nicht bestätigt werden konnten; es findet kein Fade statt.
