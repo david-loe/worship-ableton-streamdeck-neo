@@ -1,0 +1,15 @@
+.DS_Store
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.wav
+*.wave
+*.aif
+*.aiff
+*.mp3
+*.flac
+*.m4a
+*.ogg
+Ableton Project Info/
+Backup/
+Samples/

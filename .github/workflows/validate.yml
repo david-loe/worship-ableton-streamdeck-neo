@@ -1,0 +1,21 @@
+name: Validate public assets
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate public files
+        run: python3 tools/validate_public_assets.py
+      - name: Check Companion generator syntax
+        run: node --check tools/build_companion_config.mjs
