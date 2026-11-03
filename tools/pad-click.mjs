@@ -49,6 +49,7 @@ export function installAccompaniment(config, h) {
  define('click_on',`${cv('is_playing')} && ((${cv('slot_11')} >= 1 && !${cv('mute_11')}) || (${cv('slot_10')} >= 1 && !${cv('mute_10')}))`)
  define('backing_running', [0,1,2,4,5,6,7,8,9].map(i=>`${cv(`slot_${i}`)} >= 0`).join(' || '))
  define('component_valid',`${ev('set_valid')} && ${ev('structure_ok')} && ${ev('slots_fresh')} && !${ev('mixed_scenes')} && !${cv('transition')} && !${cv('fade_saved')}`)
+ define('next_play_valid',`${ev('component_valid')} && ${cv('is_playing')} && ${ev('observed_scene')} >= 1 && ${cv('selected_scene')} == ${ev('observed_scene')} && ${cv('selected_scene')} < ${ev('last_setlist_scene')}`)
  for (const kind of ['pad','click']) define(`${kind}_label`,`${cv('transition')} ? 'WECHSEL …' : !${ev('component_valid')} ? 'NICHT BEREIT' : ${ev('selection_differs')} ? 'NEUER SONG' : ${ev(`${kind}_on`)} ? 'STOP' : 'START'`)
 
  // Indexed replies are sorted into dedicated variables; never interpret the last
@@ -71,7 +72,7 @@ export function installAccompaniment(config, h) {
  // Force a float OSC argument without appending a second decimal point.
  const volumeFloat = (i,value) => multi('/live/track/set/volume',`concat('${i} ', ${value}, ${value} == round(${value}) ? '.0' : '')`)
  const restore = () => [iff(cv('fade_saved'),leaves.map(i=>iff(`${cv(`saved_volume_${i}`)} >= 0`,[volumeFloat(i,cv(`saved_volume_${i}`))]))),set('fade_saved','false')]
- const abortStarts = () => [internal('panic_bank',{location:'1/0/1',unlatch:true}),internal('panic_bank',{location:'1/0/2',unlatch:true}),internal('panic_bank',{location:'1/1/1',unlatch:true})]
+ const abortStarts = () => [internal('panic_bank',{location:'1/0/1',unlatch:true}),internal('panic_bank',{location:'1/0/2',unlatch:true}),internal('panic_bank',{location:'1/0/3',unlatch:true}),internal('panic_bank',{location:'1/1/1',unlatch:true})]
  const finishStop = () => [stopAll(),sendBlank('/live/song/stop_playing'),...restore(),set('transition','false'),set('running_scene','-1')]
  const startClip = track => multi('/live/clip_slot/fire',`concat('${track} ', ${cv('target_scene')})`)
  const release = () => [wait(400),set('transition','false')]
@@ -96,12 +97,25 @@ export function installAccompaniment(config, h) {
    iff(ready,[iff(`${cv('is_playing')} && ${ev('observed_scene')} >= 1 && ${ev('observed_scene')} != ${cv('target_scene')}`,fade(track),[iff(ev(`${kind}_on`),off,[iff(`${cv('is_playing')}` ,on,[stopAll(),...[10,11,12].map(i=>mute(i,i===track?0:1)),...startTarget(track)])])])],[set('component_error',"'CLIP / TEMPO FEHLT'")]),...release(),
   ])])]
  }
+ // Capture the target before yielding: selection replies/polls may arrive while
+ // the sequence waits. Both selection and playback must use this same target.
+ const fullSongStart = (next = false) => [seq([iff(ev(next ? 'next_play_valid' : 'component_valid'),[
+  set('transition','true'),set('target_scene',next ? `${cv('selected_scene')} + 1` : cv('selected_scene')),wait(60),
+  ...(next ? [sendInt('/live/view/set/selected_scene',cv('target_scene'))] : []),
+  stopAll(),...[10,11,12].map(i=>mute(i,0)),sendInt('/live/scene/fire',cv('target_scene')),...release(),
+ ])])]
  config.pages[1].controls[0]={}
  for(const [column,kind,track,color] of [[1,'pad',12,0x126a86],[2,'click',11,0x986519]]) {
   config.pages[1].controls[0][column]=button({background:`${ev(`${kind}_on`)} ? ${color} : 1052688`,texts:[{text:kind.toUpperCase(),size:48,height:54},{text:val(`$(expression:${kind}_label)`),size:36,y:54,height:46,color:0xffcc44}],actions:toggle(track,kind),notes:'Same scene: toggle component. Different scene: fade old song and start only this component.'})
  }
+ config.pages[1].controls[0][3]=button({
+  background:`${ev('next_play_valid')} ? 1003826 : 1052688`,
+  texts:[{text:'Next & Play',size:48,height:54,color:`${ev('next_play_valid')} ? 16777215 : 6710886`},{text:val('$(expression:next_title)'),size:36,y:54,height:46,color:`${ev('next_play_valid')} ? 16763972 : 5526612`}],
+  actions:fullSongStart(true),
+  notes:'Select and start the next full scene only while a song is playing and that song is selected. Disabled when stopped, when another song is selected, and at the end of the setlist. STOP cancels pending starts.',
+ })
  const play=config.pages[1].controls[1][1]
- play.steps[0].action_sets.down=[seq([iff(ev('component_valid'),[set('transition','true'),set('target_scene',cv('selected_scene')),wait(60),stopAll(),...[10,11,12].map(i=>mute(i,0)),sendInt('/live/scene/fire',cv('target_scene')),...release()])])]
+ play.steps[0].action_sets.down=fullSongStart()
  config.pages[1].controls[1][2].steps[0].action_sets.down=[seq([...abortStarts(),...finishStop()])]
  // Startup recovery restores only a previously recorded interrupted fade.
  addTrigger('45 INTERRUPTED FADE RECOVERY',[startupEvent(2200),intervalEvent(2)],[iff(`${cv('fade_saved')} && !${cv('transition')} && ${ev('structure_ok')}`,[...restore()])])

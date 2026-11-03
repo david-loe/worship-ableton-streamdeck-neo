@@ -1,6 +1,6 @@
 # PAD / CLICK ab Version 1.1
 
-Oben: **leer · PAD · CLICK · leer**. Unten: **PREV · PLAY · STOP · NEXT**.
+Oben: **leer · PAD · CLICK · Next & Play**. Unten: **PREV · PLAY · STOP · NEXT**.
 Die Untertitel sind gelb, Schriftgröße 36 mit automatischer Verkleinerung
 bei längeren Statusmeldungen; die Haupttitel verwenden Größe 48.
 
@@ -13,6 +13,11 @@ bei längeren Statusmeldungen; die Haupttitel verwenden Größe 48.
 
 Untertitel: START, STOP, NEUER SONG, WECHSEL … oder NICHT BEREIT.
 PLAY startet die gesamte vorgewählte Scene neu und aktiviert Pad sowie Click.
+Next & Play wählt die Scene direkt nach der aktuellen Auswahl und startet sie
+wie PLAY vollständig. Der Folgetitel steht auf der Taste. Die Taste ist nur aktiv,
+wenn ein Song läuft und genau dieser Song weiterhin ausgewählt ist. Bei Stopp,
+abweichender Auswahl, am letzten Song oder bei gesperrten Starts bleibt sie
+inaktiv; es gibt keinen Rücksprung zum Anfang.
 PREV/NEXT verändern nie die Wiedergabe. PANIC ist entfernt, weil STOP dieselbe
 vollständige Stoppfunktion übernimmt.
 
@@ -54,7 +59,7 @@ die Lautstärken exakt wiederhergestellt und nur der Zielclip gestartet.
 Effekt-Nachhall kann darüber hinaus ausklingen.
 
 Währenddessen sind neue Starts gesperrt. STOP bleibt immer aktiv, bricht die
-drei Starttasten-Sequenzen ab, stoppt Clips und Transport und stellt die
+vier Starttasten-Sequenzen ab, stoppt Clips und Transport und stellt die
 gesicherten Pegel wieder her. Persistierte Pegelsicherungen ermöglichen eine
 Wiederherstellung nach unterbrochenem Fade. Nach einem Absturz zunächst dasselbe
 Set laden und Pegel prüfen, bevor ein anderes Set geöffnet wird.

@@ -22,3 +22,5 @@ jobs:
           node --check tools/build_companion_config.mjs
           node --check tools/pad-click.mjs
           node tools/build_companion_config.mjs companion/Worship-Live.companionconfig /tmp/generated.json
+      - name: Check Next & Play actions
+        run: node --test tools/test_next_play.mjs

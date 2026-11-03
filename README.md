@@ -139,10 +139,11 @@ Zuerst PA, Interface und Monitore stummschalten oder trennen. Danach:
 | `▶ PLAY` | Ausgewählte Scene starten |
 | `■ STOP` | Alle Clips und den Transport stoppen |
 | `▶▶ NEXT` | Nächsten Song auswählen, ohne ihn zu starten |
+| `Next & Play` | Nächsten Song vollständig starten; nur aktiv, wenn ein Song läuft, dieser ausgewählt ist und ein Folgesong vorhanden ist |
 | `PAD` | Pad der Auswahl starten, ergänzen oder ausschalten |
 | `CLICK` | Click der Auswahl starten, ergänzen oder ausschalten |
 
-Oben sind die äußeren Tasten leer, PAD und CLICK sitzen mittig. Unten liegen
+Oben links ist die Taste leer, PAD und CLICK sitzen mittig, **Next & Play** oben rechts. Unten liegen
 PREV, PLAY, STOP und NEXT. Die äußeren unteren
 Tasten bleiben Page Up/Page Down.
 
@@ -181,6 +182,7 @@ eingesetzt werden; das Template liefert keine Sounds mit.
   blockiert.
 - STOP bricht ausstehende Startsequenzen ab, sendet `stop_all_clips` und
   `stop_playing` und stellt gesicherte Fade-Lautstärken wieder her.
+- Next & Play nutzt dieselben Startprüfungen wie PLAY und ist nur bei laufendem, weiterhin ausgewähltem Song mit vorhandenem Folgesong aktiv.
 - Der Blink-Trigger ist rein visuell und sendet keine Ableton-Befehle.
 - Niemals eine neue Version erstmals an einer offenen PA testen.
 
